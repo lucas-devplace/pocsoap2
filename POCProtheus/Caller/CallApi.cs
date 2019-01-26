@@ -50,7 +50,7 @@ namespace POCProtheus.Caller
 
         }
 
-        public async Task<string> CAllApiMethod(GenericAddDto dto, string url, string access_token)
+        public string CAllApiMethod(GenericAddDto dto, string url, string access_token)
         {
             LogControl logControl = new LogControl();
 

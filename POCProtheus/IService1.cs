@@ -15,7 +15,7 @@ namespace POCProtheus
     {
 
         [OperationContract]
-        Task<string> RegisterProject(string xml);
+        string RegisterProject(string xml);
 
         // TODO: Add your service operations here
     }

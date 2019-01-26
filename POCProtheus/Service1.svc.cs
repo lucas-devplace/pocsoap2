@@ -21,7 +21,7 @@ namespace POCProtheus
     {
         public object JsonConvert { get; private set; }
 
-        public Task<string> RegisterProject(string xml)
+        public string RegisterProject(string xml)
         {
             IncomingWebRequestContext request = WebOperationContext.Current.IncomingRequest;
             LogControl logControl = new LogControl();

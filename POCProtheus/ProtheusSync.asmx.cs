@@ -1,13 +1,10 @@
-﻿using POCProtheus.Caller;
+﻿using POCProtheus.Auth;
+using POCProtheus.Caller;
 using POCProtheus.Dtos;
 using POCProtheus.Helper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Web;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Services;
+using System.Web.Services.Protocols;
 
 namespace POCProtheus
 {
@@ -22,11 +19,13 @@ namespace POCProtheus
     public class ProtheusSync : System.Web.Services.WebService
     {
 
+        public Authorization Auth;
+
         [WebMethod]
-        //[ValidateInput(false)]
-        public Task<string> RegisterProject(string xml)
+        [SoapHeader("Auth", Required = true)]
+        public string RegisterProject(string xml)
         {
-            IncomingWebRequestContext request = WebOperationContext.Current.IncomingRequest;
+            
             LogControl logControl = new LogControl();
             CallApi api = new CallApi();
             GenericAddDto dto = new GenericAddDto
@@ -34,21 +33,36 @@ namespace POCProtheus
                 Xml = xml
             };
 
-            string user = request.Headers["Usuario"];
-            string senha = request.Headers["Senha"];
-
-            string access_token = api.Login(user, senha).Result;
-
-            if (String.IsNullOrEmpty(access_token))
+            if (Auth != null)
             {
-                logControl.Write("Usuário e senha não conferem");
-                return api.CAllApiMethod(dto, "/project", access_token);
+                if(Auth.IsValid())
+                {
+                    string access_token = api.Login(Auth.Usuario, Auth.Senha).Result;
+
+                    if (String.IsNullOrEmpty(access_token))
+                    {
+                        logControl.Write("Usuário e senha não conferem");
+                        return api.CAllApiMethod(dto, "/project", access_token);
+                    }
+                    else
+                    {
+                        logControl.Write("Usuário logado");
+                        return api.CAllApiMethod(dto, "/project", access_token);
+                    }
+                }
+                else
+                {
+                    logControl.Write("Usuário e senha informados na requisição não conferem");
+                    return "FALHA";
+                }
             }
             else
             {
-                logControl.Write("Usuário logado");
-                return api.CAllApiMethod(dto, "/project", access_token);
+                logControl.Write("Não foram informados usuário e senha no cabeçalho da requisição");
+                return "FALHA";
             }
+          
+       
 
         }
     }

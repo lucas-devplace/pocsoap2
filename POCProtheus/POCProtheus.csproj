@@ -76,6 +76,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\Auth.cs" />
     <Compile Include="Caller\CallApi.cs" />
     <Compile Include="Dtos\GetProtheus.cs" />
     <Compile Include="Dtos\GetLogin.cs" />
